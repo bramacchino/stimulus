@@ -1,0 +1,210 @@
+//Aliases
+"use strict";
+
+var Container = PIXI.Container,
+    autoDetectRenderer = PIXI.autoDetectRenderer,
+    loader = PIXI.loader,
+    Sprite = PIXI.Sprite,
+    Graphics = PIXI.Graphics;
+
+//Create a Pixi stage and renderer
+var stage = new Container(),
+    renderer = autoDetectRenderer(640, 360, { antialiasing: false });
+    document.body.appendChild(renderer.view);
+
+//Set the canvas's border style and background color
+renderer.view.style.border = "1px dashed black";
+renderer.backgroundColor = "0xFFFFFF";
+
+
+//Set the initial game state
+var state = play;
+
+//load an image and run the `setup` function when it's done
+loader.add("images/door.png").load(setup);
+//Define any variables that are used in more than one function
+
+function setup() {
+
+//scatteredImages();
+var createdTime = Date.now(); 
+    
+  //Capture the keyboard arrow keysx
+  var left = keyboard(37),
+      right = keyboard(39);
+
+  //Left arrow key `press` method
+    left.press = function () {
+	console.log('Reaction time is ' + (Date.now()-createdTime)/1000);
+	var b = scatteredImages();
+	setTimeout(function(){delete_sprites(b);}, 1000);
+	return  Date.now();
+
+  };
+
+
+  //Start the game loop
+  gameLoop();
+}
+
+function gameLoop() {
+
+  //Loop this function 60 times per second
+  requestAnimationFrame(gameLoop);
+
+  //Run the current state
+  state();
+
+  //Render the stage
+  renderer.render(stage);
+}
+
+
+
+function scatteredImages(){
+    var numberOfCircles = 10;
+ 
+    var circles = [];
+    var sprites = []; 
+ 
+
+    while (circles.length < numberOfCircles){
+	//Make a circle
+	// Almost, probably the int rounding cause little problem
+	var circled = {
+            x : randomInt(16,640-16), //check why stage.width != 640
+	    y : randomInt(16,360-16),
+	    r : 22.6 //randomInt(6,36)
+	};
+    
+
+	var overlapping = false;
+
+	var protection = 0;
+	
+	for (var j=0; j<circles.length; j++){
+	    var other = circles[j];
+	    var d = dist(circled.x, circled.y, other.x, other.y);
+	    if (d < circled.r + other.r + 1){
+		overlapping = true;
+		//console.log(d);
+		break;
+	    }
+	}
+	if (!overlapping){
+	    circles.push(circled);
+	}
+	protection++; 
+	if (protection % 100 == 0){
+	    console.log(protection)
+	}
+	
+	if (protection > 1000) {
+	    console.log("More than 10.000 trials");
+	    break;
+	}
+    }
+	
+    for (var k=0; k<circles.length; k++){
+	var circle = new Graphics();
+	circle.beginFill(16750899);
+	//circle.lineStyle(4, 26112, 1);
+	circle.drawCircle(0, 0, circles[k].r); // x,y = 0 'cause we reposition after for antialiasing
+	circle.endFill();
+	circle.alpha = 0.2;
+
+       
+	//If you want the graphic to be anti-aliased,
+	//convert it into a bitmap texture and then use
+	//that texture to create a new sprite
+	//var circleTexture = circle.generateTexture();
+	//var circleSprite = new Sprite(circleTexture);
+	circle.x = circles[k].x;
+	circle.y = circles[k].y;
+	sprites.push(circle);
+	stage.addChild(circle);
+
+	  //Create the sprite from the texture
+	var pixie = new PIXI.Sprite(PIXI.loader.resources["images/door.png"].texture);
+	pixie.x = circles[k].x - 16;
+	pixie.y = circles[k].y -16;
+
+	//Add the sprite to the stage
+	//for some reason performance issue 
+	sprites.push(pixie);
+	
+	
+
+	stage.addChild(pixie);
+
+    }
+    return sprites; 
+}
+
+//The `randomInt` helper function
+function randomInt(min, max) {
+    /**
+     * Return a random integers between min and max 
+     */
+    
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function dist(x1, y1, x2, y2) {
+    console.log('Distance function called')
+    return Math.sqrt(Math.abs(x1-x2)**2 + Math.abs(y1-y2)**2)  //abs not needed 
+}
+
+function delete_sprites(sprite_list){
+        //Loop through all the sprites 
+    
+    sprite_list.forEach(function(p){
+	stage.removeChild(p);
+    })}; 
+
+//The `keyboard` helper function
+//Just a wrapper function aroung HTML keyup and keydown events
+
+function keyboard(keyCode) {
+  var key = {};
+  key.code = keyCode;
+  key.isDown = false;
+  key.isUp = true;
+  key.press = undefined;
+  key.release = undefined;
+  //The `downHandler`
+  key.downHandler = function (event) {
+    if (event.keyCode === key.code) {
+      if (key.isUp && key.press) key.press();
+      key.isDown = true;
+      key.isUp = false;
+    }
+    event.preventDefault();
+  };
+
+  //The `upHandler`
+  key.upHandler = function (event) {
+    if (event.keyCode === key.code) {
+      if (key.isDown && key.release) key.release();
+      key.isDown = false;
+      key.isUp = true;
+    }
+    event.preventDefault();
+  };
+
+  //Attach event listeners
+  window.addEventListener("keydown", key.downHandler.bind(key), false);
+  window.addEventListener("keyup", key.upHandler.bind(key), false);
+
+  //Return the key object
+  return key;
+}
+//# sourceMappingURL=keyboardMovement.js.map
+
+
+function play() {
+    //scatteredImages();
+}
+
+//Any animation code goes here
+//# sourceMappingURL=shapes.js.map
