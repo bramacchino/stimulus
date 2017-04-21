@@ -1,0 +1,63 @@
+<!doctype html>
+<meta charset="utf-8">
+    <title>ANS DEMO</title>
+    
+    <head>
+	<link href="css/main.css" rel="stylesheet" type="text/css">
+        <!-- Include skewer.js as a script -->
+	<script src="http://localhost:8080/skewer"></script>
+    </head> 
+    
+<body>
+    <script src="../library/plugins/pixi.js/bin/pixi.js"></script>
+    <script src="../library/bump/bin/bump.js"></script>
+    <script src="es5/shapesSpriteFunction.js?n=1"></script>
+
+    
+    <div id="container">
+      <div id="controls">
+	<button type="button" id="left_arrow" value="left">Left</button>
+	<button type="button" id="show_button" value="space">Space Bar</button>
+	<button type="button" id="right_arrow" value="right">Right</button>					
+	</div>
+	<canvas id="viewport">	</canvas>
+    </div>
+
+    <script type="text/javascript">
+
+      /**
+      * This function is quite crappy but it does the job
+      * TODO: a single function routing the event  
+      */
+      
+      document.getElementById('show_button').addEventListener('click',hideshow,false);      
+      document.getElementById('left_arrow').addEventListener('click',left_pressed,false);
+      document.getElementById('right_arrow').addEventListener('click',right_pressed,false);
+          
+      function hideshow() {
+      space.press();
+      // document.getElementById('hidden-div').style.display = 'block';
+      
+      console.log(TextScene.scene_n);
+      
+      if(TextScene.scene_n ==3){
+      this.style.display = 'none';
+      }
+      }
+      
+      function left_pressed(){
+      left.press();
+      
+      }
+
+      function right_pressed(){
+      right.press();
+
+      }
+      
+        
+</script>
+    <script src="es5/shapesSpriteFunction.js?n=1"></script> 
+   
+</body>
+ 
