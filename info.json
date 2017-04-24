@@ -1,0 +1,7 @@
+{"info1": "Test your Approximate Number Sense Demo",
+ "info2" : "In this test you will see a random number of colored shapes on screen for 1000 milliseconds (1 second).\n Your job is to decide whether there are more objects on the right side or on the left side of the window.",
+ "endText":"The experiment is terminated \n Thank you for your participation!",
+"ready" : "Press the space bar when you are ready for the next one", 
+"title2": "Instructions", 
+"instruction1":"Press the left arrow if the numerosity on the left is greater \n Press the right arrow if the numerosity on the right is greater \n "}
+
