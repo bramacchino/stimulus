@@ -65,50 +65,29 @@ var results = {
     rightNumerosity: []
 };
 
-
 // Text messages from an external json file 
 /// This will become a function
-var info1 = "Welcome to ANS Demo !",
-    info2 = undefined,
-    endText,
-    ready,
-    title2,
-    instruction1;
-
 var promise = fetch('./info.json');
-
-promise  
-  .then(  
-    function(response) {  
-      if (response.status !== 200) {  
+var information = undefined;
+var setting = undefined; 
+promise.then(function(response){
+    // see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
+    // 200 = OK!
+     if (response.status !== 200) {  
         console.log('Looks like there was a problem. Status Code: ' +  
           response.status);  
         return;  
       }
-
-      // This is coded ad hoc TODO: modify the script as to access directly the fetched json 
-	response.json().then(function(data) {
-	    console.log(Object.keys(data));
-	    var test = Object.keys(data)[0];
-	    info1 = data[test];
-	    test = Object.keys(data)[1];
-	    info2 = data[test];
-	    test = Object.keys(data)[2];
-	    endText = data[test];
-	    test = Object.keys(data)[3];
-	    ready = data[test];
-	    test = Object.keys(data)[4];
-	    title2 = data[test];
-	    test = Object.keys(data)[5];
-	    instruction1 = data[test];
-	    
-	  return; 
-      });  
-    }  
-  )  
-  .catch(function(err) {  
-    console.log('Fetch Error :-S', err);  
-  });
+    response.json().then(function(data){
+	console.log(data);
+	setting = data;
+	console.log(setting);
+	let inner = Object.keys(data)[0];
+	information = Object.keys(data[inner]);
+	console.log("information is " + information);
+		    
+    })
+})
 
 
 // uncategorized variables 
@@ -148,8 +127,9 @@ function setup() {
   //TextScene.visible = false;
 
 
-  //Create the text sprite and add it to the `gameOver` scene
-    var title = new Text(info1);
+    //Create the text sprite and add it to the `gameOver` scene
+    
+    var title = new Text(setting.info1[information[TextScene.scene_n-1]])
     //title.style.fill ='#FFFFFF';
     title.x = renderer.width/2  - title.width/2;
     
@@ -160,7 +140,7 @@ function setup() {
     TextScene.addChild(title);
     
 
-    var message = new Text(info2);
+    var message = new Text(setting.info1[information[TextScene.scene_n+1]]);
     message.style.fill = "#FFFFFF";
     message.x = 10;
     message.y = 50;
@@ -173,18 +153,23 @@ function setup() {
     left = keyboard(37);
     right = keyboard(39);
     space = keyboard(32);
+    var  up = keyboard(38);
+    var backspace = keyboard(8);
     
     
     //Space arrow key `press` method
-    
+
     space.press = function () {
-	if (TextScene.scene_n == 1){
-	    title.text =  title2;
+	let instruction_limit = information.length; 
+	if (TextScene.scene_n < instruction_limit){
+	   // title.text =  "Instruction";
 	    title.x = renderer.width/2  - title.width/2;
-	    message.text = instruction1 + ready;
+	    console.log(setting.info1[information[0]]);
+	    message.text = setting.info1[information[TextScene.scene_n]];
 	    TextScene.scene_n ++ ;
+	    console.log("NUMBER " +  TextScene.scene_n);
 	}
-	else if (TextScene.scene_n ==2){
+	else if (TextScene.scene_n == instruction_limit){
 	    TextScene.scene_n ++;
 	    ExperimentScene.scene_n ++;
 	    NumberOfTimes ++;
@@ -195,6 +180,21 @@ function setup() {
 	}
     };
 
+    backspace.press = function () {
+	let instruction_limit = information.length;
+	if (TextScene.scene_n == 0){
+	    console.log("nothing to do"); 
+	}
+	else if (TextScene.scene_n <= instruction_limit){
+	    TextScene.scene_n -- ;
+	    //title.text =  title2;
+	    title.x = renderer.width/2  - title.width/2;
+	    message.text = setting.info1[information[TextScene.scene_n-1]];
+	     console.log("NUMBER " +  TextScene.scene_n);
+	}
+    };
+
+ 
     
     left.press = function(){
 	buttonPressed("left"); 
