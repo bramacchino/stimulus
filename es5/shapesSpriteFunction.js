@@ -65,12 +65,53 @@ var results = {
     rightNumerosity: []
 };
 
-//Text messages
-var info1 = "Welcome to ANS Demo !";
-var info2 = "In this test you will see a random number of colored shapes on screen for 1000 milliseconds (1 second). Your job is to decide whether there are more objects on the right side or on the left side of the window.";
-var endText = "The experiment is terminated \n Thank you for your participation!";
-var ready = "Press the space bar when you are ready for the next one";
 
+// Text messages from an external json file 
+/// This will become a function
+var info1 = "Welcome to ANS Demo !",
+    info2 = undefined,
+    endText,
+    ready,
+    title2,
+    instruction1;
+
+var promise = fetch('./info.json');
+
+promise  
+  .then(  
+    function(response) {  
+      if (response.status !== 200) {  
+        console.log('Looks like there was a problem. Status Code: ' +  
+          response.status);  
+        return;  
+      }
+
+      // This is coded ad hoc TODO: modify the script as to access directly the fetched json 
+	response.json().then(function(data) {
+	    console.log(Object.keys(data));
+	    var test = Object.keys(data)[0];
+	    info1 = data[test];
+	    test = Object.keys(data)[1];
+	    info2 = data[test];
+	    test = Object.keys(data)[2];
+	    endText = data[test];
+	    test = Object.keys(data)[3];
+	    ready = data[test];
+	    test = Object.keys(data)[4];
+	    title2 = data[test];
+	    test = Object.keys(data)[5];
+	    instruction1 = data[test];
+	    
+	  return; 
+      });  
+    }  
+  )  
+  .catch(function(err) {  
+    console.log('Fetch Error :-S', err);  
+  });
+
+
+// uncategorized variables 
 var createdTime = undefined; //Date.now();
 var checkTime = undefined; 
 
@@ -138,9 +179,9 @@ function setup() {
     
     space.press = function () {
 	if (TextScene.scene_n == 1){
-	    title.text =  "Instructions";
+	    title.text =  title2;
 	    title.x = renderer.width/2  - title.width/2;
-	    message.text = "Press the left arrow if the numerosity on the left is greater \n Press the right arrow if the numerosity on the right is greater \n "+ ready;
+	    message.text = instruction1 + ready;
 	    TextScene.scene_n ++ ;
 	}
 	else if (TextScene.scene_n ==2){
@@ -254,7 +295,7 @@ function genTrial(){
      * at the end quite identical so let's go for the first 
      */
     console.time("genExperiment");
-    var task = "2AFC"; 
+    var task = "2AFCmix"; 
     //generate Sprites for both sides
     TextScene.visible = false;
     ExperimentScene.visible = true;
@@ -274,8 +315,8 @@ function genTrial(){
     // 2AFC mixed stimuli
     if (task == "2AFCmix"){
 	//leftside and varside are defined globally, don't think this is reasonable
-	leftSide = scatteredImages(0,640, 0x0078AF, dinoFront, indices[0]);
-	rightSide = scatteredImages(0,640, 0x0078AF, dinoBack, indices[1], leftSide[2]);
+	leftSide = scatteredImages(0,640, 0x0078AF, rabbit, indices[0]);
+	rightSide = scatteredImages(0,640, 0x0078AF, carrot, indices[1], leftSide[2]);
 	var d = leftSide[0].concat(rightSide[0]);
     }
 
@@ -522,3 +563,4 @@ function play() {
 
 //Any animation code goes here
 //# sourceMappingURL=shapes.js.map
+

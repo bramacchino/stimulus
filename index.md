@@ -1,6 +1,8 @@
 # Stimulus 
 ## Alternative Forced Choice Numerosity Task 
 
-Try out the demo!
 
 [ANS DEMO!](./demo.html)
+The  new demo is online. Try it out!
+
+
