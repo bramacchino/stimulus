@@ -69,6 +69,7 @@ var results = {
 /// This will become a function
 var promise = fetch('./info.json');
 var information = undefined;
+var information1 = undefined;
 var setting = undefined; 
 promise.then(function(response){
     // see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
@@ -84,7 +85,11 @@ promise.then(function(response){
 	console.log(setting);
 	let inner = Object.keys(data)[0];
 	information = Object.keys(data[inner]);
+	inner = Object.keys(data)[1];
+	information1 = Object.keys(data[inner]);
 	console.log("information is " + information);
+	console.log("information 1 is " + information1);
+	console.log(setting['info2']);
 		    
     })
 })
@@ -108,9 +113,12 @@ function setup() {
     console.time("setup");
     
       //Create the `experiment` scene
-    Container.prototype.scene_n =  undefined; 
+    Container.prototype.scene_n =  undefined;
+    Container.prototype.scene = undefined;
+    
     ExperimentScene = new Container();
-    ExperimentScene.scene_n = 0; 
+    ExperimentScene.scene_n = 0;
+    ExperimentScene.scene = "demo"; 
      
 	
     stage.addChild(ExperimentScene);
@@ -120,7 +128,8 @@ function setup() {
 
       //Create the `gameOver` scene
     TextScene = new Container();
-    TextScene.scene_n = 1; 
+    TextScene.scene_n = 1;
+    TextScene.scene = "info1";
     stage.addChild(TextScene);
 
   //Make the `gameOver` scene invisible when the game first starts
@@ -160,12 +169,23 @@ function setup() {
     //Space arrow key `press` method
 
     space.press = function () {
-	let instruction_limit = information.length; 
+	let instruction_limit = undefined;
+	let info = undefined;
+	
+	if (TextScene.scene == "info1"){
+	    instruction_limit = information.length;
+	    info = 'info1';
+	}
+	else if (TextScene.scene == "info2"){
+	    instruction_limit = information1.length;
+	    information = information1;
+	    info = 'info2'; 
+
+	}
 	if (TextScene.scene_n < instruction_limit){
 	   // title.text =  "Instruction";
 	    title.x = renderer.width/2  - title.width/2;
-	    console.log(setting.info1[information[0]]);
-	    message.text = setting.info1[information[TextScene.scene_n]];
+	    message.text =  setting[info][information[TextScene.scene_n]];
 	    TextScene.scene_n ++ ;
 	    console.log("NUMBER " +  TextScene.scene_n);
 	}
@@ -173,11 +193,13 @@ function setup() {
 	    TextScene.scene_n ++;
 	    ExperimentScene.scene_n ++;
 	    NumberOfTimes ++;
+	    if (TextScene.scene == "info2"){
+		ExperimentScene.scene = "experiment"; 
+	    }
 	    var d =setTimeout(function(){genExperiment();},1000);
 	    document.getElementById('show_button').style.display = 'none';
-	    
-	    
 	}
+	
     };
 
     backspace.press = function () {
@@ -235,11 +257,32 @@ function setup() {
 	results.rightNumerosity.push(rightSide[1]); 
 	console.log("The user pressed the " + button + " button");
 	results.userResponse.push(button_id);
-	NumberOfTimes ++; 
+	NumberOfTimes ++;
+	if (ExperimentScene.scene == "demo"){
+	    console.log("Demo started");
+	    trials_number = 5; 
+	}
+	if (ExperimentScene.scene == "experiment"){
+	    console.log("experiment started");
+	    trials_number = 20; 
+	}
+
 	if ((ExperimentScene.scene_n >=1) &&  NumberOfTimes < trials_number){
 	    var d =setTimeout(function(){genExperiment();},1000);
 	    return  Date.now();}
 	else {
+	    if (ExperimentScene.scene == "demo"){
+	    var d = setTimeout(function(){
+		TextScene.visible = true;
+		title.text = "The demo is terminated";
+		title.x = renderer.width/2  - title.width/2;
+		//message.text = endText;
+		message.text = "";
+		TextScene.scene = "info2";
+		TextScene.scene_n = 0; 
+	    },1000)}
+	    
+	    if (ExperimentScene.scene == "experiment"){
 	    var d = setTimeout(function(){
 		TextScene.visible = true;
 		title.text = "The experiment is terminated";
@@ -250,10 +293,8 @@ function setup() {
 		    message.text = message.text + prop + " = " + results[prop] + "\n" ;
 		}
 
-
-
-
 	    },1000)}
+	}
     }   
 
 

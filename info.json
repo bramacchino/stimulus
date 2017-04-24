@@ -2,6 +2,7 @@
 "second": "In this test you will see a random number of colored shapes on screen for 1000 milliseconds (1 second).\n Your job is to decide whether there are more objects on the right side or on the left side of the window.", 
 "third": "Your task is to be both fast and accurate \n The images will be shown for one second, if you feel that you can answer before that, you are allowed to do it.", 
 "fourth": "The instruction is now terminated. When you press the space bar the experiment will begun."},
+"info2": {"title":"the Demo is terminated", "first": "The full experiment comprises 20 trials \n press space bar when you are ready"},
  "endText":"The experiment is terminated \n Thank you for your participation!",
 "ready" : "Press the space bar when you are ready for the next one", 
 "title2": "Instructions", 
