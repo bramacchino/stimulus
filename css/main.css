@@ -45,6 +45,8 @@ canvas {
     position: absolute;
     top: 0px;
     left: 0px;
+    z-index:3;
+    /*visibility: hidden;*/
 }
 
 
@@ -55,9 +57,25 @@ canvas {
     width: 100%;*/
     background-color: #838383;
     /*border: 2px solid green;*/
-    z-index : 2; 
+    z-index : 2;
 }
 
+/*Plotly CSS 
+Put over canvas 
+*/
+.svg-container{
+    z-index: 5;
+}
+
+#results
+{
+    
+    height: 100%;
+    width: 100%;
+    background-color: #838383;
+    /*border: 2px solid green;*/
+    z-index : 5; 
+}
 
 #controls
 {
