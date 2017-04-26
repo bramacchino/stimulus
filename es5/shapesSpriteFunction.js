@@ -112,10 +112,12 @@ results["numberOfTrials"] = trials_number;
 function setup() {
     console.time("setup");
     
-      //Create the `experiment` scene
+    // add scene_n, and scene to Container
+    // scene_n to keep track of the timeline
     Container.prototype.scene_n =  undefined;
     Container.prototype.scene = undefined;
-    
+
+    // Create the experiment scene
     ExperimentScene = new Container();
     ExperimentScene.scene_n = 0;
     ExperimentScene.scene = "demo"; 
@@ -126,17 +128,13 @@ function setup() {
     ExperimentScene.visible = false; 
     
 
-      //Create the `gameOver` scene
+    //Create the  Information scene
     TextScene = new Container();
     TextScene.scene_n = 1;
     TextScene.scene = "info1";
     stage.addChild(TextScene);
 
-  //Make the `gameOver` scene invisible when the game first starts
-  //TextScene.visible = false;
-
-
-    //Create the text sprite and add it to the `gameOver` scene
+    //Create the text sprite and add it to the information  scene
     
     var title = new Text(setting.info1[information[TextScene.scene_n-1]])
     //title.style.fill ='#FFFFFF';
@@ -149,7 +147,7 @@ function setup() {
     TextScene.addChild(title);
     
 
-    var message = new Text(setting.info1[information[TextScene.scene_n+1]]);
+    var message = new Text(setting.info1[information[TextScene.scene_n]]);
     message.style.fill = "#FFFFFF";
     message.x = 10;
     message.y = 50;
@@ -287,11 +285,15 @@ function setup() {
 		TextScene.visible = true;
 		title.text = "The experiment is terminated";
 		title.x = renderer.width/2  - title.width/2;
+		message.text = "";
+		graph_results(result_analysis(results)[0], result_analysis(results)[1]);
 		//message.text = endText;
+		/*
 		message.text = "";
 		for (var prop in results){
 		    message.text = message.text + prop + " = " + results[prop] + "\n" ;
 		}
+		*/
 
 	    },1000)}
 	}
@@ -336,7 +338,7 @@ function genTrial(){
      * at the end quite identical so let's go for the first 
      */
     console.time("genExperiment");
-    var task = "2AFCmix"; 
+    var task = "2AFC"; 
     //generate Sprites for both sides
     TextScene.visible = false;
     ExperimentScene.visible = true;
@@ -596,6 +598,91 @@ function keyboard(keyCode) {
   return key;
 }
 //# sourceMappingURL=keyboardMovement.js.map
+
+/*
+*
+* START HELPER FUNCTIONS FOR DATA ANALYSIS
+*
+*/
+ 
+function result_analysis(results){
+    /**
+     * reulsts is an object {trials, rt, response, leftN, rightN}
+     * prepare data for plotting
+     */
+    // let correct_response
+
+    var left_diff =  math.subtract(results.leftNumerosity,results.rightNumerosity);    
+    var trial_distance =  math.abs(left_diff);
+    var correct_response =  left_diff.map(function(x){
+	if (x>0){return 1}
+	else if (x<0){return 0}});
+
+    var distance = valuesInArray(trial_distance).sort();
+    var averages = [];
+    distance.forEach(function(x){
+	var indices = sameIndex(trial_distance,x);
+	var temp = []; 
+	indices.forEach(function(y){
+	    temp.push(results.reactionTime[y])
+	})
+	
+	averages.push(sumArray(temp)/temp.length);
+    })
+    return [distance, averages]
+}
+
+// Helper function for array sum 
+// http://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
+function sumArray(array){
+    var sum = array.reduce(add, 0);
+    function add(a, b) {
+	return a + b;
+    }
+    return sum 
+}
+
+// Helper function for returning same element index
+function sameIndex(array,element){
+    /*
+     * Given [1,2,1,3] returns [0,2]
+     */
+  var counts = [];
+    for (var i = 0; i < array.length; i++){
+      if (array[i] === element) {  
+        counts.push(i);
+      }
+    }
+  return counts;
+}
+
+
+// Helper function for returning list of different values
+function valuesInArray(array){
+    var differentValues = [];
+    var temp = [];
+    array.forEach(function(x){
+	if(!(inArray(x, temp))){
+	    temp.push(x)
+	}
+    })
+    return temp 
+}
+
+/* Check for browser compatibility 
+function isInArray(value, array) {
+  return array.indexOf(value) > -1;
+}
+*/
+
+function inArray(needle, haystack) {
+ var length = haystack.length;
+ for (var i = 0; i < length; i++) {
+ if (haystack[i] == needle)
+  return true;
+ }
+ return false;
+}
 
 
 function play() {
