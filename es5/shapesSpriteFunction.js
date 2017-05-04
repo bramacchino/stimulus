@@ -421,8 +421,7 @@ function scatteredImages(origin, width, color, name, circles_number, drawnPositi
 
 	var protection = 0;
 
-	drawnShapes.concat(shapes);
-	//drawnShapes.push(shapes);
+	drawnShapes =  drawnShapes.concat(shapes);
 	
 	for (var j=0; j<drawnShapes.length; j++){
 	    var other = drawnShapes[j];
