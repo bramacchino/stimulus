@@ -1,5 +1,6 @@
 //Aliases
-"use strict";
+"use strict"; //https://www.w3schools.com/js/js_strict.asp
+
 
 var Container = PIXI.Container,
     autoDetectRenderer = PIXI.autoDetectRenderer,
@@ -16,16 +17,40 @@ var canvas = document.getElementById('viewport');
 var stage = new Container(),
     renderer = autoDetectRenderer(640,
 				  360,
-				  //this works but check documentation 
+				  //this works but check documentation
+				  // http://stackoverflow.com/questions/12826977/multiple-arguments-vs-options-object
+				  
 				  {view: document.getElementById("viewport"), transparent:true}
 				 ); //{antialising: false} ?? 
 
-//what's the point of the following line???
+// add the renderer to the document for resizing
+// NOTE: CSS INTERACTION
+// appendChild HTML5 method != addChild (pixi method )
+// CSS sizes and renderer sizes order
+// http://stackoverflow.com/questions/2279519/how-to-get-main-div-container-to-align-to-centre
+// Check for vertical positoning !!!
+// http://www.mattboldt.com/kicking-ass-with-display-table/
+// http://emergentweb.com/test/valign.html
+// http://stackoverflow.com/questions/396145/how-to-vertically-center-a-div-for-all-browsers
+// Indeed uncomment the following and disaster happens:
+// canvas is set out of the container (why?)
 //document.body.appendChild(renderer.view);
+
 
 //Set the canvas's border style and background color
 //renderer.view.style.border = "2px solid orange";
 //renderer.backgroundColor = "0x838383";
+
+
+// Resize the renderer
+// the following only to resize the renderer and not the content
+var w = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+var h = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+
+// TODO: generalize ad Hoc
+// NOTE CSS INTERACTION!!!! 
+renderer.resize(Math.min(w-20, 728), Math.min(h-50, 500));
+//renderer.resize(954, 500);
 
 
 //Set the initial game state
@@ -53,6 +78,16 @@ var TextScene = undefined,
 
 var rightSide = undefined,
     leftSide = undefined;
+
+// Mouse pointer and click via Tink (update to hammer.js for multitouch support)
+var t = undefined,
+    pointer = undefined;
+
+// TODO: provisional
+// Interaction with layout to be avoided althought Content/Container is pretty general
+var content_div = document.getElementById('content');
+var content_offset =  content_div.offsetLeft;
+console.log("canvas position is", content_offset);
 
 //save the results in the objects results
 //
@@ -109,6 +144,9 @@ var space = undefined,
 var trials_number = 20;
 results["numberOfTrials"] = trials_number; 
 
+//
+var instruction_limit = 1;
+
 function setup() {
     console.time("setup");
     
@@ -121,7 +159,6 @@ function setup() {
     ExperimentScene = new Container();
     ExperimentScene.scene_n = 0;
     ExperimentScene.scene = "demo"; 
-     
 	
     stage.addChild(ExperimentScene);
 
@@ -155,6 +192,52 @@ function setup() {
    // message.style = ({wordWrap: true, wordWrapWidth: 600});
     TextScene.addChild(message);
     
+
+    // Capturing mouse/touch events
+        // Mouse capturing
+    //Create a new instance of Tink
+  t = new Tink(PIXI, renderer.view);
+
+  //Create a `pointer` object
+    pointer = t.makePointer();
+
+
+    //Add a custom `press` method
+    var instruction_ended = false; 
+    pointer.press = function () {
+	var pointerRelativePosition = pointer.x-content_offset;
+	console.log("The pointer was pressed at " + pointerRelativePosition);
+	//320, 640 built in, refractor the code for more generality
+	console.log("Text and Instruction" + TextScene.scene_n, instruction_limit)
+	
+	if (TextScene.scene_n <= instruction_limit) {
+	    spacebar_pressed(); 
+	}
+
+	if (TextScene.scene_n === instruction_limit){
+	    instruction_ended = true;
+	}
+	console.log("Instruction ended: ", instruction_ended);
+
+	if (instruction_ended === true){ 
+
+	if (pointerRelativePosition < 320){
+	    buttonPressed("left");
+	}
+	else if (pointerRelativePosition > 320){
+	    buttonPressed("right");
+	}
+	}
+
+	
+   };
+
+    //Add a custom `tap` method
+    // for mouse click (slower than press ?) 
+  pointer.tap = function () {
+    return console.log("The pointer was tapped");
+  };
+    
     
   //Capture the keyboard arrow keysx
     left = keyboard(37);
@@ -166,8 +249,13 @@ function setup() {
     
     //Space arrow key `press` method
 
-    space.press = function () {
-	let instruction_limit = undefined;
+    space.press = function(){
+	spacebar_pressed();
+    };
+
+
+    function spacebar_pressed() {
+	//let instruction_limit = undefined;
 	let info = undefined;
 	
 	if (TextScene.scene == "info1"){
@@ -311,7 +399,9 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 
   //Run the current state
-  state();
+    state();
+
+  // ToDo: Updating Tink t.update(); for mouse tracking 
 
   //Render the stage
   renderer.render(stage);
