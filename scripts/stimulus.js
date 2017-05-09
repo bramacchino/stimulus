@@ -133,6 +133,7 @@ promise.then(function(response){
 // uncategorized variables 
 var createdTime = undefined; //Date.now();
 var checkTime = undefined; 
+var instruction_ended = false;
 
 var space = undefined,
     left = undefined,
@@ -203,7 +204,6 @@ function setup() {
 
 
     //Add a custom `press` method
-    var instruction_ended = false; 
     pointer.press = function () {
 	var pointerRelativePosition = pointer.x-content_offset;
 	console.log("The pointer was pressed at " + pointerRelativePosition);
@@ -214,9 +214,14 @@ function setup() {
 	    spacebar_pressed(); 
 	}
 
-	if (TextScene.scene_n === instruction_limit){
+	if (TextScene.scene_n === instruction_limit+1){
 	    instruction_ended = true;
 	}
+
+	else if (ExperimentScene.visible == true){
+	    instruction_ended = false; 
+	}
+
 	console.log("Instruction ended: ", instruction_ended);
 
 	if (instruction_ended === true){ 
@@ -352,20 +357,23 @@ function setup() {
 	    console.log("experiment started");
 	    trials_number = 20; 
 	}
-
+ 
 	if ((ExperimentScene.scene_n >=1) &&  NumberOfTimes < trials_number){
 	    var d =setTimeout(function(){genExperiment();},1000);
 	    return  Date.now();}
+	else if (!(ExperimentScene.scene_n >=1)){
+	    Console.log("So this can really happen"); 
+	}
 	else {
 	    if (ExperimentScene.scene == "demo"){
 	    var d = setTimeout(function(){
 		TextScene.visible = true;
-		title.text = "The demo is terminated";
+		TextScene.scene = "info2";
+		title.text = "The demo is terminated!";
 		title.x = renderer.width/2  - title.width/2;
 		//message.text = endText;
 		message.text = "";
-		TextScene.scene = "info2";
-		TextScene.scene_n = 0; 
+		TextScene.scene_n = 1; 
 	    },1000)}
 	    
 	    if (ExperimentScene.scene == "experiment"){
