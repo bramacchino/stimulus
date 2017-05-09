@@ -1,30 +1,33 @@
 <!doctype html>
 <meta charset="utf-8">
-    <title>ANS DEMO</title>
-    
+<title>ANS DEMO</title>
+
     <head>
 	<link href="css/main.css" rel="stylesheet" type="text/css">
         <!-- Include skewer.js as a script -->
-	<script src="http://localhost:8080/skewer"></script>
-	<script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script
-    </head> 
+	<script src="library/plotly.min.js"></script>
+	</head> 
+	 
+	 <body>
+	 <script src="library/plugins/pixi.js/bin/pixi.js"></script>
+	
+	<script src="library/math.min.js"></script>
+	<script src="library/bump/bin/bump.js"></script>
+	<script src="library/plugins/pixi.js/bin/tink.js"></script>
     
-<body>
-    <script src="library/plugins/pixi.js/bin/pixi.js"></script>
-    <script src="library/math.min.js"></script>
-    <script src="library/bump/bin/bump.js"></script>
         
-    <div id="container">
-      <div id="controls">
-	<button type="button" id="left_arrow" value="left">Left</button>
-	<button type="button" id="show_button" value="space">Space Bar</button>
-	<button type="button" id="right_arrow" value="right">Right</button>					
-	</div>
-	<canvas id="viewport">	</canvas>
-	<div id="results"></div>
-    </div>
+	<div id="container">
+	    <div id="centered">
+		<div id="content">
+		    <canvas id="viewport"></canvas>
+		    <div id="results"></div>
+		</div>
+	    </div>
+        </div>
+	
 	<script src="scripts/stimulus.js?n=1"></script>
 	
+ <!-- 
 	<script type="text/javascript">
 
 	 /**
@@ -57,10 +60,12 @@
 
 	 }
 	</script>
-	
+	-->
+
 	<script>
 	 function graph_results(stimulus, response){
 	     TESTER = document.getElementById('results');
+	     TESTER.style.visibility = 'visible'; 
 	     var data1 = {
 		 x: stimulus,
 		 y: response,
