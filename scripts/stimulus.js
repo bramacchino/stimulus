@@ -101,33 +101,14 @@ var results = {
 };
 
 // Text messages from an external json file 
-/// This will become a function
-var promise = fetch('./info.json');
+// The function fetch_data modify these global variables
+// TODO: modify the behavior 
+var path = './info.json';
 var information = undefined;
 var information1 = undefined;
-var setting = undefined; 
-promise.then(function(response){
-    // see https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html
-    // 200 = OK!
-     if (response.status !== 200) {  
-        console.log('Looks like there was a problem. Status Code: ' +  
-          response.status);  
-        return;  
-      }
-    response.json().then(function(data){
-	console.log(data);
-	setting = data;
-	console.log(setting);
-	let inner = Object.keys(data)[0];
-	information = Object.keys(data[inner]);
-	inner = Object.keys(data)[1];
-	information1 = Object.keys(data[inner]);
-	console.log("information is " + information);
-	console.log("information 1 is " + information1);
-	console.log(setting['info2']);
-		    
-    })
-})
+var setting = undefined;
+fetch_data(path);
+
 
 
 // uncategorized variables 
@@ -176,20 +157,22 @@ function setup() {
     
     var title = new Text(setting.info1[information[TextScene.scene_n-1]])
     //title.style.fill ='#FFFFFF';
-    title.x = renderer.width/2  - title.width/2;
+
     
     //Note this is a bug
     //https://github.com/pixijs/pixi.js/issues/1745
     // Update pixi to v 3.0.4+
-    title.style =({fill: '#FFFFFF',  font: "bold 25px Arial"});
+    title.style =({fill: '#FFFFFF',  font: "bold 35px Arial"});
+    title.x = renderer.width/2  - title.width/2;
     TextScene.addChild(title);
     
 
     var message = new Text(setting.info1[information[TextScene.scene_n]]);
+    var wrap = renderer.width - 20; // all the canvas minus some border
     message.style.fill = "#FFFFFF";
-    message.x = 10;
-    message.y = 50;
-    message.style = ({fill: "#FFFFFF", font: "bold 15px Arial", wordWrap: true, wordWrapWidth: 600});
+    message.x = renderer.width/2  - wrap/2;
+    message.y = renderer.height/2  - message.height/2;
+    message.style = ({fill: "#FFFFFF", font: "bold 20px Arial", wordWrap: true, wordWrapWidth: wrap});
    // message.style = ({wordWrap: true, wordWrapWidth: 600});
     TextScene.addChild(message);
     
@@ -586,63 +569,6 @@ function scatteredImages(origin, width, color, name, circles_number, drawnPositi
     return [sprites, numberOfCircles, shapes]; 
 }
 
-//The `randomInt` helper function
-function randomInt(min, max, indexToExclude) {
-    /**
-     * Return a random integers between min (inclusive) and max (inclusive)  
-     * accept a number to be excluded
-     */
-    console.time("randomInt");
-    //null, undefined, 0, false, '', NaN will all get the default value
-    //if default only if ommitted change in if(typeof indexToExclude === 'undefined') indexToExclude = 0; 
-    indexToExclude = indexToExclude || 0; 
-    var rand = null; //an integer
-    while(rand === null || rand === indexToExclude){
-	rand = Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-    console.timeEnd("randomInt");
-    return rand; 
-}
-
-function genCombinations(min, max){
-    /**
-     * Returns all possible combination of two elements from a set of lenght max-min+1 {1 = min, ..., n=max}
-     * ordered by distance. 
-     * [[distance 0], ...., [distance n-1]]
-     */
-    console.time("genCombination"); 
-    var combinations = new Object(); 
-    for (var i=min; i<=max; i++){
-	for (var j=min; j<=max; j++){
-	    //temporary list
-	    //note var is used just from the parser not runtime
-	    var temp = [];
-	    if (i!=j){
-		temp.push(i); temp.push(j);
-		// == so it catches both null and undefined etc... 
-		if (combinations[String(Math.abs(i-j))] == null){
-		    combinations[String(Math.abs(i-j))] = [temp];
-		}
-		else {
-		    combinations[String(Math.abs(i-j))].push(temp);
-		    
-		}
-	    }
-	}
-    }
-    console.timeEnd("genCombination");
-    return combinations;
-}
-
-function dist(x1, y1, x2, y2) {
-    /**
-     * Return euclidean distance of two points with coordinates (x1, y1), (x2, y2)
-     * TODO :  compute by using tanh,  avoid computing sqrt 
-     */
-    //console.log('Distance function called')
-    return Math.sqrt(Math.abs(x1-x2)**2 + Math.abs(y1-y2)**2)  //abs not needed 
-}
-
 function delete_sprites(sprite_list){
     console.time("deleteSprites");
         //Loop through all the sprites 
@@ -696,89 +622,17 @@ function keyboard(keyCode) {
 }
 //# sourceMappingURL=keyboardMovement.js.map
 
-/*
-*
-* START HELPER FUNCTIONS FOR DATA ANALYSIS
-*
-*/
- 
-function result_analysis(results){
-    /**
-     * reulsts is an object {trials, rt, response, leftN, rightN}
-     * prepare data for plotting
-     */
-    // let correct_response
 
-    var left_diff =  math.subtract(results.leftNumerosity,results.rightNumerosity);    
-    var trial_distance =  math.abs(left_diff);
-    var correct_response =  left_diff.map(function(x){
-	if (x>0){return 1}
-	else if (x<0){return 0}});
-
-    var distance = valuesInArray(trial_distance).sort();
-    var averages = [];
-    distance.forEach(function(x){
-	var indices = sameIndex(trial_distance,x);
-	var temp = []; 
-	indices.forEach(function(y){
-	    temp.push(results.reactionTime[y])
+// Fetch Json to Server
+// http://stackoverflow.com/questions/29775797/fetch-post-json-data
+function send_json(){
+    return fetch('./output', {
+	method: 'POST',
+	body: JSON.stringify({
+	    email:'foo',
+	    pass: 'bar'
 	})
-	
-	averages.push(sumArray(temp)/temp.length);
-    })
-    return [distance, averages]
-}
-
-// Helper function for array sum 
-// http://stackoverflow.com/questions/1230233/how-to-find-the-sum-of-an-array-of-numbers
-function sumArray(array){
-    var sum = array.reduce(add, 0);
-    function add(a, b) {
-	return a + b;
-    }
-    return sum 
-}
-
-// Helper function for returning same element index
-function sameIndex(array,element){
-    /*
-     * Given [1,2,1,3] returns [0,2]
-     */
-  var counts = [];
-    for (var i = 0; i < array.length; i++){
-      if (array[i] === element) {  
-        counts.push(i);
-      }
-    }
-  return counts;
-}
-
-
-// Helper function for returning list of different values
-function valuesInArray(array){
-    var differentValues = [];
-    var temp = [];
-    array.forEach(function(x){
-	if(!(inArray(x, temp))){
-	    temp.push(x)
-	}
-    })
-    return temp 
-}
-
-/* Check for browser compatibility 
-function isInArray(value, array) {
-  return array.indexOf(value) > -1;
-}
-*/
-
-function inArray(needle, haystack) {
- var length = haystack.length;
- for (var i = 0; i < length; i++) {
- if (haystack[i] == needle)
-  return true;
- }
- return false;
+}).then(response => console.log(response))
 }
 
 

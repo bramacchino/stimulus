@@ -2,138 +2,141 @@
 <meta charset="utf-8">
 <title>ANS DEMO</title>
 
-    <head>
-	<link href="css/main.css" rel="stylesheet" type="text/css">
-        <!-- Include skewer.js as a script -->
-	<script src="library/plotly.min.js"></script>
-	</head> 
-	 
-	 <body>
-	 <script src="library/plugins/pixi.js/bin/pixi4.min.js"></script>
-	
-	<script src="library/math.min.js"></script>
-	<script src="library/bump/bin/bump.js"></script>
-	<script src="library/plugins/pixi.js/bin/tink.js"></script>
+<head>
+    <link href="css/main.css" rel="stylesheet" type="text/css">
+    <!-- Include skewer.js as a script -->
+    <script src="library/plotly.min.js"></script>
+</head> 
+
+<body>
+    <script src="library/plugins/pixi.js/bin/pixi4.min.js"></script>
     
-        
-	<div id="container">
-	    <div id="centered">
-		<div id="content">
-		    <canvas id="viewport"></canvas>
-		    <div id="results"></div>
-		</div>
+    <script src="library/math.min.js"></script>
+    <script src="library/bump/bin/bump.js"></script>
+    <script src="library/plugins/pixi.js/bin/tink.js"></script>
+    <script src="scripts/helpers.js"></script>
+    <script src="scripts/data_analys.js"></script>
+    <script src="scripts/inputs.js"></script>
+    <script src="scripts/fetch_instructions.js"></script>
+    
+    <div id="container">
+	<div id="centered">
+	    <div id="content">
+		<canvas id="viewport"></canvas>
+		<div id="results"></div>
 	    </div>
-        </div>
-	
-	<script src="scripts/stimulus.js?n=1"></script>
-	
- <!-- 
-	<script type="text/javascript">
+	</div>
+    </div>
+    
+    <script src="scripts/stimulus.js"></script>
+    
+    <!-- 
+	 <script type="text/javascript">
 
 	 /**
-	  * This function is quite crappy but it does the job
-	  * TODO: a single function routing the event  
-	  */
+	 * This function is quite crappy but it does the job
+	 * TODO: a single function routing the event  
+	 */
 	 
 	 document.getElementById('show_button').addEventListener('click',hideshow,false);      
 	 document.getElementById('left_arrow').addEventListener('click',left_pressed,false);
 	 document.getElementById('right_arrow').addEventListener('click',right_pressed,false);
          
 	 function hideshow() {
-	     space.press();
-	     // document.getElementById('hidden-div').style.display = 'block';
-	     
-	     console.log(TextScene.scene_n);
-	     
-	     if(TextScene.scene_n ==3){
-		 this.style.display = 'none';
-	     }
+	 space.press();
+	 // document.getElementById('hidden-div').style.display = 'block';
+	 
+	 console.log(TextScene.scene_n);
+	 
+	 if(TextScene.scene_n ==3){
+	 this.style.display = 'none';
+	 }
 	 }
 	 
 	 function left_pressed(){
-	     left.press();
-	     
+	 left.press();
+	 
 	 }
 
 	 function right_pressed(){
-	     right.press();
+	 right.press();
 
 	 }
-	</script>
-	-->
+	 </script>
+       -->
 
-	<script>
-	 function graph_results(stimulus, response){
-	     TESTER = document.getElementById('results');
-	     TESTER.style.visibility = 'visible'; 
-	     var data1 = {
-		 x: stimulus,
-		 y: response,
-		 mode:'lines+markers',
-		 name: 'Reaction Times',
-		 //text: ['a','b','c','d','e'],
-		 marker: {
-		     color: 'rgb(22, 94, 109)',
-		     size: 12 
-		 }};
+    <script>
+     function graph_results(stimulus, response){
+	 TESTER = document.getElementById('results');
+	 TESTER.style.visibility = 'visible'; 
+	 var data1 = {
+	     x: stimulus,
+	     y: response,
+	     mode:'lines+markers',
+	     name: 'Reaction Times',
+	     //text: ['a','b','c','d','e'],
+	     marker: {
+		 color: 'rgb(22, 94, 109)',
+		 size: 12 
+	     }};
 
-	     /*
-		var data2= {
-		x: [1, 2, 3, 4, 5],
-		y: [1, 4, 6, 8, 10],
-		mode: 'lines',
-		name: 'lines',
-		line: {
-		dash: 'dashdot', //solid, dot, https://plot.ly/javascript/reference/#scatter-line-dash
-		width: 4
-		}
-		};*/
+	 /*
+	    var data2= {
+	    x: [1, 2, 3, 4, 5],
+	    y: [1, 4, 6, 8, 10],
+	    mode: 'lines',
+	    name: 'lines',
+	    line: {
+	    dash: 'dashdot', //solid, dot, https://plot.ly/javascript/reference/#scatter-line-dash
+	    width: 4
+	    }
+	    };*/
 
-	     // var data = [data1, data2];
-	     var data = [data1];
+	 // var data = [data1, data2];
+	 var data = [data1];
 
-	     var layout = {
-		 autosize: false,
-		 width: 400,
-		 height: 300,
-		 margin: {
-		     l: 100,
-		     r: 100,
-		     b: 100,
-		     t: 100,
-		     pad: 2
-		 }, 
-		 paper_bgcolor: 'rgba(0,0,0,0)',
-		 plot_bgcolor: 'rgba(0,0,0,0)',
-		 // title: 'Here goes the title',
-		 xaxis: {
-		     title: 'Distance',
-		     showgrid: true,
-		     titlefont: {
-			 color: '#FFF'
-		     },
-		     tickcolor: "#FF0",
-		     tickfont: {
-			 color: "#FFF"
-		     }
+	 var layout = {
+	     autosize: false,
+	     width: 400,
+	     height: 300,
+	     margin: {
+		 l: 100,
+		 r: 100,
+		 b: 100,
+		 t: 100,
+		 pad: 2
+	     }, 
+	     paper_bgcolor: 'rgba(0,0,0,0)',
+	     plot_bgcolor: 'rgba(0,0,0,0)',
+	     // title: 'Here goes the title',
+	     xaxis: {
+		 title: 'Distance',
+		 showgrid: true,
+		 titlefont: {
+		     color: '#FFF'
 		 },
-		 yaxis: {
-		     title: 'Reaction Time \n (ms/average)',
-		     showgrid: true,
-		     titlefont: {
-			 color: '#FFF'
-		     },
-		     tickcolor: "#FF0",
-		     tickfont: {
-			 color: "#FFF"
-		     }
-
+		 tickcolor: "#FF0",
+		 tickfont: {
+		     color: "#FFF"
 		 }
-	     };
+	     },
+	     yaxis: {
+		 title: 'Reaction Time \n (ms/average)',
+		 showgrid: true,
+		 titlefont: {
+		     color: '#FFF'
+		 },
+		 tickcolor: "#FF0",
+		 tickfont: {
+		     color: "#FFF"
+		 }
 
-	     Plotly.plot( TESTER, data, layout);
-	 }
-	</script>
+	     }
+	 };
+
+	 Plotly.plot( TESTER, data, layout);
+     }
+    </script>
         
 	
    
